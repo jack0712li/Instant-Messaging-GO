@@ -2,12 +2,16 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 	// "ginchat/models"
 
 	"gorm.io/driver/mysql"
 
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -25,7 +29,17 @@ func InitConfig() {
 
 
 func InitMySQL() {
-	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{})
+	//自定义日志模板，打印sql语句
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold: time.Second, //慢SQL阈值
+			LogLevel:      logger.Info, //级别
+			Colorful:      true,        //彩色
+		},
+	)
+
+	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})	
 	fmt.Println("MySQL inited")
 
 	// user := models.UserBasic{}
