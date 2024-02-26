@@ -17,11 +17,11 @@ paths:
         in: query
         name: name
         type: string
-      - description: passWord
+      - description: password
         in: query
         name: password
         type: string
-      - description: repassWord
+      - description: repassword
         in: query
         name: repassword
         type: string
@@ -46,6 +46,25 @@ paths:
           schema:
             type: string
       summary: delete user
+      tags:
+      - User
+  /user/findUserByNameAndPwd:
+    post:
+      parameters:
+      - description: userName
+        in: query
+        name: name
+        type: string
+      - description: password
+        in: query
+        name: password
+        type: string
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      summary: User log in
       tags:
       - User
   /user/getUserList:

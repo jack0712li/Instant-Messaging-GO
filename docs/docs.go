@@ -45,13 +45,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "passWord",
+                        "description": "password",
                         "name": "password",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "repassWord",
+                        "description": "repassword",
                         "name": "repassword",
                         "in": "query"
                     }
@@ -77,6 +77,36 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id",
                         "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/findUserByNameAndPwd": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "User log in",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userName",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
                         "in": "query"
                     }
                 ],
