@@ -37,6 +37,14 @@ func CreateUser(c *gin.Context) {
 	password := c.Query("password")
 	repassword := c.Query("repassword")
 
+	nameCheck := models.FindUserByName(user.Name)
+	if nameCheck.Name != "" {
+		c.JSON(-1, gin.H{
+			"message": "This user has been registerd",
+		})
+		return
+	}
+
 	if password != repassword {
 		c.JSON(-1, gin.H{
 			"message": "password is not same",
