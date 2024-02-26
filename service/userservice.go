@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"ginchat/utils"
+	"math/rand"
 )
 
 // GetUserList
@@ -37,6 +39,8 @@ func CreateUser(c *gin.Context) {
 	password := c.Query("password")
 	repassword := c.Query("repassword")
 
+	salt := fmt.Sprintf("%06d", rand.Int31())
+
 	nameCheck := models.FindUserByName(user.Name)
 	if nameCheck.Name != "" {
 		c.JSON(-1, gin.H{
@@ -51,7 +55,8 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	user.Password = password
+	user.Salt = salt
+	user.Password = utils.MakePassword(password, salt)	
 	models.CreateUser(user)
 	c.JSON(200, gin.H{
 		"message": "create user success",

@@ -10,21 +10,22 @@ import (
 
 type UserBasic struct {
 	gorm.Model
-	Name string
-	Password string
-	Phone string `valid:"matches(^\\d{10}$)"`
-	Email      string `valid:"email"`
-	Identity string
-	ClientIp string
-	ClientPort string
-	LoginTime time.Time
+	Name          string
+	Password      string
+	Phone         string `valid:"matches(^\\d{10}$)"`
+	Email         string `valid:"email"`
+	Identity      string
+	ClientIp      string
+	ClientPort    string
+	Salt          string
+	LoginTime     time.Time
 	HeartbeatTime time.Time
-	LoginOutTime time.Time
-	IsLogout bool
-	DevicveInfo string
+	LoginOutTime  time.Time
+	IsLogout      bool
+	DevicveInfo   string
 }
 
-func(table *UserBasic) TableName() string {
+func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
 
