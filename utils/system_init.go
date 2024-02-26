@@ -2,7 +2,8 @@ package utils
 
 import (
 	"fmt"
-	"ginchat/models"
+	// "ginchat/models"
+
 	"gorm.io/driver/mysql"
 
 	"github.com/spf13/viper"
@@ -25,11 +26,9 @@ func InitConfig() {
 
 
 func InitMySQL() {
-	DB, _ := gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{})
-	user := models.UserBasic{}
-	DB.Find(&user)
-	fmt.Println("user:",user)
-
-
-	
+	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{})
+	fmt.Println("MySQL inited")
+	// user := models.UserBasic{}
+	// DB.Find(&user)
+	// fmt.Println(user)
 }
