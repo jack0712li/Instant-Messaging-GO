@@ -196,6 +196,10 @@ func SendMsg(c *gin.Context) {
 	MsgHandler(ws, c)
 }
 
+func SendUserMsg(c *gin.Context) {
+	models.Chat(c.Writer, c.Request)
+}
+
 func MsgHandler(ws *websocket.Conn, c *gin.Context) {
 	for {
 		msg, err := utils.Subscribe(c, utils.PublishKey)
