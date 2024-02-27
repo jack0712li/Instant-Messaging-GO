@@ -8,13 +8,16 @@ import (
 	// "ginchat/models"
 
 	"gorm.io/driver/mysql"
-
+	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
+var (
+	DB  *gorm.DB
+	Red *redis.Client
+)
 
 func InitConfig() {
 	viper.SetConfigName("app")
@@ -45,4 +48,21 @@ func InitMySQL() {
 	// user := models.UserBasic{}
 	// DB.Find(&user)
 	// fmt.Println(user)
+}
+
+
+func InitRedis() {
+	Red = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           viper.GetInt("redis.DB"),
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+	pong, err := Red.Ping().Result()
+	if err != nil {
+		fmt.Println("init redis error: ", err)
+	} else {
+		fmt.Println("Redis inited: ", pong)
+	}
 }
