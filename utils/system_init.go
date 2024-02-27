@@ -32,7 +32,6 @@ func InitConfig() {
 }
 
 
-
 func InitMySQL() {
 	//自定义日志模板，打印sql语句
 	newLogger := logger.New(
@@ -44,13 +43,13 @@ func InitMySQL() {
 		},
 	)
 
-	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})	
+	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})
 	fmt.Println("MySQL inited")
-
 	// user := models.UserBasic{}
 	// DB.Find(&user)
 	// fmt.Println(user)
 }
+
 
 
 func InitRedis() {

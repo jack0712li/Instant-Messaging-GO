@@ -23,7 +23,7 @@ func GetUserList(c *gin.Context) {
 	data := models.GetUserList()
 
 	c.JSON(200, gin.H{
-		"code":    "200",
+		"code":    0,
 		"message": "User list",
 		"data":    data,
 	})
@@ -41,14 +41,26 @@ func GetUserList(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	user := models.UserBasic{}
 
-	user.Name = c.Query("name")
-	password := c.Query("password")
-	repassword := c.Query("repassword")
+	// user.Name = c.Query("name")
+	// password := c.Query("password")
+	// repassword := c.Query("repassword")
 
+	user.Name = c.Request.FormValue("name")
+	password := c.Request.FormValue("password")
+	repassword := c.Request.FormValue("Identity")
+	
 	salt := fmt.Sprintf("%06d", rand.Int31())
 
-	nameCheck := models.FindUserByName(user.Name)
-	if nameCheck.Name != "" {
+	data := models.FindUserByName(user.Name)
+	if user.Name == "" || password == "" || repassword == "" {
+		c.JSON(200, gin.H{
+			"code":    -1,
+			"message": "Name or password is empty",
+			"data":    user,
+		})
+		return
+	}
+	if data.Name != "" {
 		c.JSON(-1, gin.H{
 			"code":    -1,
 			"message": "This user has been registerd",
@@ -69,7 +81,7 @@ func CreateUser(c *gin.Context) {
 	user.Password = utils.MakePassword(password, salt)
 	models.CreateUser(user)
 	c.JSON(200, gin.H{
-		"code":    200,
+		"code":    0,
 		"message": "create user success",
 		"data":    user,
 	})
@@ -86,12 +98,15 @@ func CreateUser(c *gin.Context) {
 func FindUserByNameAndPwd(c *gin.Context) {
 	data := models.UserBasic{}
 
-	name := c.Query("name")
-	password := c.Query("password")
+	// name := c.Query("name")
+	// password := c.Query("password")
+	name := c.Request.FormValue("name")
+	password := c.Request.FormValue("password")
+
 	user := models.FindUserByName(name)
 	if user.Name == "" {
 		c.JSON(200, gin.H{
-			"code":    "404", // 404 not found
+			"code":    -1, // 404 not found
 			"message": "User not exist",
 			"data":    data,
 		})
@@ -101,7 +116,7 @@ func FindUserByNameAndPwd(c *gin.Context) {
 	flag := utils.ValidPassword(password, user.Salt, user.Password)
 	if !flag {
 		c.JSON(200, gin.H{
-			"code":    "404", // 404 not found
+			"code":    -1, // 404 not found
 			"message": "Password not match",
 			"data":    data,
 		})
@@ -112,7 +127,7 @@ func FindUserByNameAndPwd(c *gin.Context) {
 	data = models.FindUserByNameAndPwd(name, pwd)
 
 	c.JSON(200, gin.H{
-		"code":    "200", // 200 success
+		"code":    0, // 200 success
 		"message": "login success",
 		"data":    data,
 	})
@@ -131,7 +146,7 @@ func DeleteUser(c *gin.Context) {
 	user.ID = uint(id)
 	models.DeleteUser(user)
 	c.JSON(200, gin.H{
-		"code":    "200", // 200 success
+		"code":    0, // 200 success
 		"message": "Delete user success",
 		"data":    user,
 	})
@@ -173,6 +188,7 @@ func UpdateUser(c *gin.Context) {
 			"data":    user})
 	}
 }
+
 // Prevent websocket request from cross-domain
 var upGrade = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {

@@ -1,8 +1,10 @@
 package service
 
+import (
+	"text/template"
 
-import "github.com/gin-gonic/gin"
-
+	"github.com/gin-gonic/gin"
+)
 
 // GetIndex
 // @Tags index
@@ -10,8 +12,22 @@ import "github.com/gin-gonic/gin"
 // @Router /index [get]
 func GetIndex(c *gin.Context){
 
-	c.JSON(200, gin.H{
-		"message": "Hello World",
-	})
+	ind, err := template.ParseFiles("index.html", "views/chat/head.html")
+	if err != nil {
+		panic(err)
+	}
+	ind.Execute(c.Writer, "index")
 
+	// c.JSON(200, gin.H{
+	// 	"message": "welcome",
+	// })
+}
+
+
+func ToRegister(c *gin.Context) {
+	reg, err := template.ParseFiles("views/user/register.html")
+	if err != nil {
+		panic(err)
+	}
+	reg.Execute(c.Writer, "register")
 }

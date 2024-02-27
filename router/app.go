@@ -11,15 +11,27 @@ import (
 func Router() *gin.Engine {
 
 	r := gin.Default()
+	// swagger
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// static file
+	r.Static("/asset", "./asset")
+	r.LoadHTMLGlob("views/**/*")
+
+	// pages
+	r.GET("/", service.GetIndex)
 	r.GET("/index", service.GetIndex)
-	r.GET("/user/getUserList", service.GetUserList)
-	r.GET("/user/createUser", service.CreateUser)
-	r.GET("/user/deleteUser", service.DeleteUser)
+	r.GET("/toRegister", service.ToRegister)
+
+	// user
+	r.POST("/user/getUserList", service.GetUserList)
+	r.POST("/user/createUser", service.CreateUser)
+	r.POST("/user/deleteUser", service.DeleteUser)
 	r.POST("/user/updateUser", service.UpdateUser)
 	r.POST("/user/findUserByNameAndPwd", service.FindUserByNameAndPwd)
+
+	//send msg
 	r.GET("/user/sendMsg", service.SendMsg)
 	r.GET("/user/sendUserMsg", service.SendUserMsg)
 	return r
