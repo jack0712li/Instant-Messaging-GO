@@ -3,11 +3,11 @@ package service
 import (
 	"fmt"
 	"ginchat/models"
-	"strconv"
+	"ginchat/utils"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
-	"ginchat/utils"
 	"math/rand"
+	"strconv"
 )
 
 // GetUserList
@@ -19,7 +19,9 @@ func GetUserList(c *gin.Context) {
 	data := models.GetUserList()
 
 	c.JSON(200, gin.H{
-		"message": data,
+		"code":    "200",
+		"message": "User list",
+		"data":    data,
 	})
 
 }
@@ -44,22 +46,28 @@ func CreateUser(c *gin.Context) {
 	nameCheck := models.FindUserByName(user.Name)
 	if nameCheck.Name != "" {
 		c.JSON(-1, gin.H{
+			"code":    -1,
 			"message": "This user has been registerd",
+			"data":    user,
 		})
 		return
 	}
 
 	if password != repassword {
 		c.JSON(-1, gin.H{
-			"message": "password is not same",
+			"code":    -1,
+			"message": "password dont match",
+			"data":    user,
 		})
 		return
 	}
 	user.Salt = salt
-	user.Password = utils.MakePassword(password, salt)	
+	user.Password = utils.MakePassword(password, salt)
 	models.CreateUser(user)
 	c.JSON(200, gin.H{
+		"code":    200,
 		"message": "create user success",
+		"data":    user,
 	})
 
 }
@@ -79,7 +87,9 @@ func FindUserByNameAndPwd(c *gin.Context) {
 	user := models.FindUserByName(name)
 	if user.Name == "" {
 		c.JSON(200, gin.H{
+			"code":    "404", // 404 not found
 			"message": "User not exist",
+			"data":    data,
 		})
 		return
 	}
@@ -87,7 +97,9 @@ func FindUserByNameAndPwd(c *gin.Context) {
 	flag := utils.ValidPassword(password, user.Salt, user.Password)
 	if !flag {
 		c.JSON(200, gin.H{
+			"code":    "404", // 404 not found
 			"message": "Password not match",
+			"data":    data,
 		})
 		return
 	}
@@ -96,7 +108,9 @@ func FindUserByNameAndPwd(c *gin.Context) {
 	data = models.FindUserByNameAndPwd(name, pwd)
 
 	c.JSON(200, gin.H{
-		"message": data,
+		"code":    "200", // 200 success
+		"message": "login success",
+		"data":    data,
 	})
 }
 
@@ -113,10 +127,11 @@ func DeleteUser(c *gin.Context) {
 	user.ID = uint(id)
 	models.DeleteUser(user)
 	c.JSON(200, gin.H{
+		"code":    "200", // 200 success
 		"message": "Delete user success",
+		"data":    user,
 	})
 }
-
 
 // UpdateUser
 // @Summary update user
@@ -142,12 +157,15 @@ func UpdateUser(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(200, gin.H{
-			"message": "param no match",
+			"code":    -1,
+			"message": "param not match",
+			"data":    user,
 		})
 	} else {
 		models.UpdateUser(user)
 		c.JSON(200, gin.H{
+			"code":    0,
 			"message": "Update user success",
-		})
+			"data":    user})
 	}
 }

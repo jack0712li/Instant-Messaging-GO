@@ -55,6 +55,11 @@ func FindUserByEmail(email string) UserBasic {
 func FindUserByNameAndPwd(name string, password string) UserBasic {
 	user := UserBasic{}
 	utils.DB.Where("name = ? and password = ?", name, password).First(&user)
+	
+	//token encode
+	str := fmt.Sprintf("%d", time.Now().Unix())
+	temp := utils.MD5Encode(str)
+	utils.DB.Model(&user).Where("id = ?", user.ID).Update("identity", temp)
 	return user
 }
 func CreateUser(user UserBasic) *gorm.DB {
