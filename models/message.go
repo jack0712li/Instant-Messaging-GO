@@ -126,7 +126,7 @@ func init() {
 // udp数据发送协程
 func udpSendProc() {
 	con, err := net.DialUDP("udp", nil, &net.UDPAddr{
-		IP:   net.IPv4(192, 168, 0, 255),
+		IP:   net.IPv4(192, 168, 1, 236),
 		Port: 3000,
 	})
 	defer con.Close()
@@ -176,6 +176,7 @@ func dispatch(data []byte) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("here is the mesage", msg)
 	switch msg.Type {
 	case 1: //私信
 		fmt.Println("dispatch  data :", string(data))
@@ -190,7 +191,7 @@ func dispatch(data []byte) {
 }
 
 func sendMsg(userId int64, msg []byte) {
-	fmt.Print("sendMsg >>>>>>>> userId ", userId, "    msg: ", string(msg))
+	fmt.Print("sendMsg >>>>>>>> userId", userId, "    msg: ", string(msg))
 	rwLocker.RLock()
 	node, ok := clientMap[userId]
 	rwLocker.RUnlock()

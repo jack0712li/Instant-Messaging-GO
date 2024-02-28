@@ -636,15 +636,14 @@
                         this.isDisable = true;
                     }, 100)
                 },
-                heartbeat() 
-                {
+                heartbeat() {
                     if (this.webSocket.readyState == 1) {  //失去连接 3
                         var msg = this.createmsgcontext();
                         msg.Media = -1;
                         msg.Type = 3
-                        msg.Content = "heartbeat";
+                        msg.Content = "心跳";
                         //this.showmsg(userInfo(),msg);
-                        this.webSocket.send(JSON.stringify(msg))
+                        <!-- this.webSocket.send(JSON.stringify(msg)) -->
                     }
 
                 }
