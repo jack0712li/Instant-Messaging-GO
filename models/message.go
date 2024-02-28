@@ -1,7 +1,7 @@
 package models
 
 import (
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -15,21 +15,20 @@ import (
 
 type Message struct {
 	gorm.Model
-	FormId   int64 //sender
+	FromId   int64 //sender
 	TargetId int64 //receiver
-	Type     int //message sending type group single or broadcast
-	Media    int    //message media type text image voice
-	Content  string //message content
+	Type     int   //1.私聊 2.群聊 3.广播
+	Media    int   //1.文字 2.表情包 3.图片 4.音频
+	Content  string
 	Pic      string
 	Url      string
 	Desc     string
-	Amount   int
+	Amount   int //数字统计
 }
 
 func (table *Message) TableName() string {
 	return "message"
 }
-
 
 type Node struct {
 	Conn      *websocket.Conn
@@ -37,16 +36,12 @@ type Node struct {
 	GroupSets set.Interface
 }
 
-
 var clientMap map[int64]*Node = make(map[int64]*Node, 0)
 
-
-// lock
 var rwLocker sync.RWMutex
 
-
 func Chat(writer http.ResponseWriter, request *http.Request) {
-	//1. 获取参数和校验token etc
+	//1. 校验token etc
 	// token := query.Get("token")
 
 	query := request.URL.Query()
@@ -87,11 +82,7 @@ func Chat(writer http.ResponseWriter, request *http.Request) {
 	//6. recv
 	go recvProc(node)
 	sendMsg(userId, []byte("Welcome to ginchat"))
-
-
-
 }
-
 
 func sendProc(node *Node) {
 	for {
@@ -106,7 +97,6 @@ func sendProc(node *Node) {
 	}
 }
 
-
 func recvProc(node *Node) {
 	for {
 		_, data, err := node.Conn.ReadMessage()
@@ -115,7 +105,7 @@ func recvProc(node *Node) {
 			return
 		}
 		broadMsg(data)
-		fmt.Println("[ws] <<<<<<", string(data))
+		fmt.Println("[ws] <<<<<<", data)
 	}
 }
 
@@ -133,7 +123,7 @@ func init() {
 // udp数据发送协程
 func udpSendProc() {
 	con, err := net.DialUDP("udp", nil, &net.UDPAddr{
-		IP:   net.IPv4(172, 19, 80, 1),
+		IP:   net.IPv4(192, 168, 0, 255),
 		Port: 3000,
 	})
 	defer con.Close()
@@ -176,13 +166,11 @@ func udpRecvProc() {
 // 后端调度逻辑
 func dispatch(data []byte) {
 	msg := Message{}
-	fmt.Println(data)
-	fmt.Println(msg)
-	// err := json.Unmarshal(data, &msg)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	switch msg.Type {
 	case 1: //私信
 		sendMsg(msg.TargetId, data)
