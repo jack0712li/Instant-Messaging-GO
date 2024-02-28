@@ -457,7 +457,7 @@
 
                 },
                 initwebsocket: function () {
-                    var url = "ws://" + location.host + "/user/sendUserMsg?userId=" + userId() + "&token=" + util.parseQuery("token");
+                    var url = "ws://" + location.host + "/chat?userId=" + userId() + "&token=" + util.parseQuery("token");
                     this.webSocket = new WebSocket(url);
                     //消息处理
                     this.webSocket.onmessage = function (evt) {
@@ -636,12 +636,13 @@
                         this.isDisable = true;
                     }, 100)
                 },
-                heartbeat() {
+                heartbeat() 
+                {
                     if (this.webSocket.readyState == 1) {  //失去连接 3
                         var msg = this.createmsgcontext();
                         msg.Media = -1;
                         msg.Type = 3
-                        msg.Content = "心跳";
+                        msg.Content = "heartbeat";
                         //this.showmsg(userInfo(),msg);
                         this.webSocket.send(JSON.stringify(msg))
                     }
