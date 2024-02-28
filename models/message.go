@@ -105,7 +105,7 @@ func recvProc(node *Node) {
 			return
 		}
 		broadMsg(data)
-		fmt.Println("[ws] <<<<<<", data)
+		fmt.Println("[ws] <<<<<<", string(data))
 	}
 }
 
